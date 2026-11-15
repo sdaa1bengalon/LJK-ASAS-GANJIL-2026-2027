@@ -31,7 +31,6 @@
             font-family: 'Times New Roman', Times, serif;
         }
 
-        /* Lebar dan tinggi disesuaikan persis dengan @page agar margin kiri-kanan simetris */
         .size-a4 { width: 210mm; height: 296.5mm; } 
         .size-f4 { width: 215mm; height: 329.5mm; }
 
@@ -99,7 +98,7 @@
         .student-box { 
             border: 1.5px solid black; 
             padding: 10px 12px; 
-            margin-bottom: 12px; 
+            margin-bottom: 24px; /* Jarak diperlebar dari bagian bawah identitas */
             font-family: sans-serif;
         }
         .info-table { width: 100%; border-collapse: collapse; }
@@ -112,18 +111,52 @@
         .sheet-subtitle {
             text-align: center;
             font-weight: bold;
-            margin: 2px 0 14px 0;
+            margin: 0 0 18px 0;
             font-size: 12pt;
             font-family: sans-serif;
         }
 
-        /* PG STYLE */
-        .answer-wrapper { display: flex; justify-content: center; width: 100%; font-family: sans-serif; }
-        .column { flex: 1; display: flex; flex-direction: column; align-items: center; }
-        .question-row { display: flex; align-items: center; margin-bottom: 7.5px; }
-        .q-num { width: 30px; font-weight: bold; text-align: right; margin-right: 15px; font-size: 10.5pt; }
-        .options { display: flex; gap: 10px; }
-        .box { width: 7.5mm; height: 7.5mm; border: 1.5px solid black; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10pt; }
+        /* PG STYLE (3 KOLOM RAPI) */
+        .answer-wrapper { 
+            display: flex; 
+            justify-content: space-between; 
+            width: 100%; 
+            padding: 0 2mm;
+            box-sizing: border-box;
+            font-family: sans-serif; 
+        }
+        .column { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .question-row { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 9px; 
+        }
+        .q-num { 
+            width: 24px; 
+            font-weight: bold; 
+            text-align: right; 
+            margin-right: 8px; 
+            font-size: 10pt; 
+        }
+        .options { 
+            display: flex; 
+            gap: 6px; 
+        }
+        .box { 
+            width: 6.5mm; 
+            height: 6.5mm; 
+            border: 1.5px solid black; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            font-size: 9.5pt; 
+        }
 
         /* URAIAN STYLE (GARIS RAPAT SEPERTI BUKU TULIS) */
         .uraian-title { font-weight: bold; margin-bottom: 8px; font-size: 12pt; font-family: sans-serif; }
@@ -173,7 +206,7 @@
             <label>Mapel:<br><input type="text" id="inputMapel" value="Matematika" style="width:100%" oninput="update()"></label>
             <label>Kelas:<br><input type="text" id="inputKelas" value="V (Lima)" style="width:100%" oninput="update()"></label>
             <label>Tanggal:<br><input type="date" id="inputTanggal" style="width:100%" oninput="update()"></label>
-            <label>Jumlah PG (Max 40):<br><input type="number" id="inputJumlahPG" value="35" min="1" max="40" style="width:100%" oninput="updateLJK()"></label>
+            <label>Jumlah PG (Max 45):<br><input type="number" id="inputJumlahPG" value="35" min="1" max="45" style="width:100%" oninput="updateLJK()"></label>
         </div>
 
         <div class="panel-section">
@@ -254,6 +287,7 @@
         <div class="answer-wrapper">
             <div id="col1" class="column"></div>
             <div id="col2" class="column"></div>
+            <div id="col3" class="column"></div>
         </div>
 
         <div class="footer">SD Anugerah Abadi 1 Bengalon | Halaman 1</div>
@@ -314,7 +348,6 @@
         function generateUraianLines(isF4) {
             const container = document.getElementById('kotakUraian');
             container.innerHTML = '';
-            // Spasi 6.5mm: 44 baris untuk F4, 38 baris untuk A4
             const lineCount = isF4 ? 44 : 38;
             for (let i = 0; i < lineCount; i++) {
                 const line = document.createElement('div');
@@ -359,6 +392,7 @@
         function generatePG(start, end, containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = ""; 
+            if (start > end) return;
             for (let i = start; i <= end; i++) {
                 const row = document.createElement('div');
                 row.className = 'question-row';
@@ -379,9 +413,9 @@
             const inputElement = document.getElementById('inputJumlahPG');
             let totalSoal = parseInt(inputElement.value);
             
-            if (totalSoal > 40) {
-                totalSoal = 40;
-                inputElement.value = 40;
+            if (totalSoal > 45) {
+                totalSoal = 45;
+                inputElement.value = 45;
             } else if (totalSoal < 1) {
                 totalSoal = 1;
                 inputElement.value = 1;
@@ -389,15 +423,16 @@
 
             if (isNaN(totalSoal)) return;
 
-            const half = Math.ceil(totalSoal / 2);
+            // Jika soal <= 30 (misal 25 soal): per kolom maksimal 10 soal (jadi 10 - 10 - 5)
+            // Jika soal > 30 (misal 35 soal): per kolom maksimal 15 soal (jadi 15 - 15 - 5)
+            const perCol = totalSoal <= 30 ? 10 : 15;
 
-            generatePG(1, half, 'col1');
-            
-            if (totalSoal > 1) {
-                generatePG(half + 1, totalSoal, 'col2');
-            } else {
-                document.getElementById('col2').innerHTML = "";
-            }
+            const col1End = Math.min(totalSoal, perCol);
+            const col2End = Math.min(totalSoal, perCol * 2);
+
+            generatePG(1, col1End, 'col1');
+            generatePG(col1End + 1, col2End, 'col2');
+            generatePG(col2End + 1, totalSoal, 'col3');
             
             update();
         }
