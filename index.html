@@ -9,19 +9,18 @@
     <style>
         @media screen {
             body { background-color: #f0f0f0; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: sans-serif; }
-            .control-panel { background: white; padding: 20px; border-radius: 8px; width: 210mm; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); box-sizing: border-box; }
+            .control-panel { background: white; padding: 20px; border-radius: 8px; width: 215mm; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); box-sizing: border-box; }
             .page { box-shadow: 0 0 20px rgba(0,0,0,0.2); margin-bottom: 20px; }
         }
 
         @media print {
-            body { background: white; margin: 0; padding: 0; }
+            html, body { background: white; margin: 0; padding: 0; }
             .control-panel { display: none; }
-            .page { border: none; box-shadow: none; page-break-after: always; }
+            .page { border: none; box-shadow: none; margin: 0; page-break-after: always; }
             .page:last-child { page-break-after: auto; }
         }
 
         .page {
-            width: 210mm;
             background: white;
             padding: 10mm 15mm; 
             position: relative;
@@ -32,8 +31,9 @@
             font-family: 'Times New Roman', Times, serif;
         }
 
-        .size-a4 { height: 296.5mm; } 
-        .size-f4 { height: 329.5mm; }
+        /* Lebar dan tinggi disesuaikan persis dengan @page agar margin kiri-kanan simetris */
+        .size-a4 { width: 210mm; height: 296.5mm; } 
+        .size-f4 { width: 215mm; height: 329.5mm; }
 
         /* KOP SURAT STYLE */
         .kop-container {
