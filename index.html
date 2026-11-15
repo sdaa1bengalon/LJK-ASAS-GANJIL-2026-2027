@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>LJK ASAS Ganjil - SD Anugerah Abadi 1 Bengalon</title>
+    <style id="page-style">
+        @page { size: 215mm 330mm; margin: 0; }
+    </style>
+    <style>
+        @media screen {
+            body { background-color: #f0f0f0; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: sans-serif; }
+            .control-panel { background: white; padding: 20px; border-radius: 8px; width: 210mm; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); box-sizing: border-box; }
+            .page { box-shadow: 0 0 20px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        }
+
+        @media print {
+            body { background: white; margin: 0; padding: 0; }
+            .control-panel { display: none; }
+            .page { border: none; box-shadow: none; page-break-after: always; }
+            .page:last-child { page-break-after: auto; }
+        }
+
+        .page {
+            width: 210mm;
+            background: white;
+            padding: 10mm 15mm; 
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .size-a4 { height: 296.5mm; } 
+        .size-f4 { height: 329.5mm; }
+
+        /* KOP SURAT STYLE */
+        .kop-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border-bottom: 3px double black;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            min-height: 28mm;
+        }
+        .kop-logo {
+            position: absolute;
+            left: 0mm;
+            top: 0mm;
+            width: 30mm;
+            height: 30mm;
+            object-fit: contain;
+            z-index: 2;
+        }
+        .kop-text {
+            width: 100%;
+            text-align: center;
+            padding-left: 25mm;
+            box-sizing: border-box;
+        }
+        .kop-yayasan {
+            font-size: 13pt;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+        .kop-sekolah {
+            font-size: 15pt;
+            font-weight: bold;
+            margin: 1px 0 3px 0;
+        }
+        .kop-detail-table {
+            margin: 0 auto;
+            font-size: 8.5pt;
+            text-align: left;
+            border-collapse: collapse;
+            line-height: 1.25;
+        }
+        .kop-detail-table td {
+            padding: 0 2px;
+            vertical-align: top;
+        }
+        .kop-email {
+            color: blue;
+            text-decoration: underline;
+        }
+
+        /* JUDUL UJIAN DI BAWAH GARIS KOP */
+        .exam-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12pt;
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
+        
+        /* IDENTITAS SISWA */
+        .student-box { 
+            border: 1.5px solid black; 
+            padding: 10px 12px; 
+            margin-bottom: 12px; 
+            font-family: sans-serif;
+        }
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table td { font-size: 10.5pt; padding: 4px 0; white-space: nowrap; }
+        
+        .label-wide { width: 115px; font-weight: bold; } 
+        .label-short { width: 65px; font-weight: bold; padding-left: 20px; }
+
+        /* SUBJUDUL LEMBAR JAWABAN DI BAWAH DATA SISWA */
+        .sheet-subtitle {
+            text-align: center;
+            font-weight: bold;
+            margin: 2px 0 14px 0;
+            font-size: 12pt;
+            font-family: sans-serif;
+        }
+
+        /* PG STYLE */
+        .answer-wrapper { display: flex; justify-content: center; width: 100%; font-family: sans-serif; }
+        .column { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .question-row { display: flex; align-items: center; margin-bottom: 7.5px; }
+        .q-num { width: 30px; font-weight: bold; text-align: right; margin-right: 15px; font-size: 10.5pt; }
+        .options { display: flex; gap: 10px; }
+        .box { width: 7.5mm; height: 7.5mm; border: 1.5px solid black; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10pt; }
+
+        /* URAIAN STYLE (GARIS RAPAT SEPERTI BUKU TULIS) */
+        .uraian-title { font-weight: bold; margin-bottom: 8px; font-size: 12pt; font-family: sans-serif; }
+        .kotak-uraian {
+            flex-grow: 1;
+            width: 100%;
+            border: 1.5px solid black;
+            margin-bottom: 10mm;
+            box-sizing: border-box;
+            padding: 1.5mm 4mm 3mm 4mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .uraian-line {
+            width: 100%;
+            height: 6.5mm;
+            border-bottom: 1px solid #444444;
+            box-sizing: border-box;
+        }
+
+        .footer { 
+            position: absolute; 
+            bottom: 8mm; 
+            left: 15mm; 
+            right: 15mm; 
+            text-align: center; 
+            font-size: 9pt; 
+            border-top: 1px solid black; 
+            padding-top: 4px; 
+            font-family: sans-serif;
+        }
+
+        .panel-section {
+            border-top: 1px solid #ddd;
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel">
+        <h3 style="margin-top:0; margin-bottom: 12px;">⚙️ Pengaturan LJK SD Anugerah Abadi 1</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px;">
+            <label>Mapel:<br><input type="text" id="inputMapel" value="Matematika" style="width:100%" oninput="update()"></label>
+            <label>Kelas:<br><input type="text" id="inputKelas" value="V (Lima)" style="width:100%" oninput="update()"></label>
+            <label>Tanggal:<br><input type="date" id="inputTanggal" style="width:100%" oninput="update()"></label>
+            <label>Jumlah PG (Max 40):<br><input type="number" id="inputJumlahPG" value="35" min="1" max="40" style="width:100%" oninput="updateLJK()"></label>
+        </div>
+
+        <div class="panel-section">
+            <div style="margin-bottom: 10px;">
+                <label><b>Link Google Drive Logo:</b> 
+                    <input type="text" id="inputDriveUrl" value="https://drive.google.com/file/d/18Xq09U_GaVqDgBxsLIpcDNVU45dItE1l/view?usp=sharing" style="width: 68%;" oninput="updateLogoSource()">
+                </label>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; font-size: 13px;">
+                <label>Ukuran Logo: <b><span id="valSize">30</span> mm</b><br>
+                    <input type="range" id="logoSize" min="10" max="40" step="0.5" value="30" style="width:100%" oninput="updateLogoPosition()">
+                </label>
+                <label>Geser Kiri/Kanan (X): <b><span id="valX">0</span> mm</b><br>
+                    <input type="range" id="logoX" min="-10" max="30" step="0.5" value="0" style="width:100%" oninput="updateLogoPosition()">
+                </label>
+                <label>Geser Atas/Bawah (Y): <b><span id="valY">0</span> mm</b><br>
+                    <input type="range" id="logoY" min="-10" max="20" step="0.5" value="0" style="width:100%" oninput="updateLogoPosition()">
+                </label>
+            </div>
+        </div>
+
+        <div class="panel-section" style="display: flex; gap: 20px; align-items: center;">
+            <label><b>Ukuran Kertas:</b> 
+                <select id="selectPaper" onchange="update()">
+                    <option value="size-f4" selected>F4 / Folio</option>
+                    <option value="size-a4">A4</option>
+                </select>
+            </label>
+            <button onclick="window.print()" style="margin-left: auto; padding: 8px 16px; font-weight: bold; cursor: pointer; background: #1a73e8; color: white; border: none; border-radius: 5px;">🖨️ CETAK SEKARANG</button>
+        </div>
+    </div>
+
+    <!-- HALAMAN 1: PILIHAN GANDA -->
+    <div id="paperArea1" class="page size-f4">
+        <div class="kop-container">
+            <img src="https://lh3.googleusercontent.com/d/18Xq09U_GaVqDgBxsLIpcDNVU45dItE1l" alt="Logo" class="kop-logo logo-preview">
+            <div class="kop-text">
+                <p class="kop-yayasan">YAYASAN ANUGERAH ABADI</p>
+                <p class="kop-sekolah">SD ANUGERAH ABADI 1 BENGALON</p>
+                <table class="kop-detail-table">
+                    <tr>
+                        <td style="width: 58px;">Sekretariat</td>
+                        <td>: Jl.Poros Muara Wahau Km 145, Desa Tepian Langsat Kecamatan.Bengalon,<br>
+                        &nbsp;&nbsp;Kabupaten. Kutai Timur, Provinsi .KalimantanTimur, Kode Pos : 75618</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>: <span class="kop-email">sds.anugerahabadi14@gmail.com</span> NSS: 10.2.16.10.09.023 NPSN : 69907270</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="exam-title">
+            ASESMEN SUMATIF AKHIR SEMESTER GANJIL<br>
+            TAHUN PELAJARAN 2026/2027
+        </div>
+
+        <div class="student-box">
+            <table class="info-table">
+                <tr>
+                    <td style="width: 80px; font-weight: bold;">Nama</td>
+                    <td>: ...........................................................</td>
+                    <td class="label-short">Kelas</td>
+                    <td>: <span class="displayKelas" style="font-weight:bold">V (Lima)</span></td>
+                </tr>
+                <tr>
+                    <td class="label-wide">Mata Pelajaran</td>
+                    <td>: <span class="displayMapel" style="font-weight:bold">Matematika</span></td>
+                    <td class="label-short">Tanggal</td>
+                    <td>: <span class="displayTanggal">................................</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="sheet-subtitle">LEMBAR JAWABAN (PILIHAN GANDA)</div>
+
+        <div class="answer-wrapper">
+            <div id="col1" class="column"></div>
+            <div id="col2" class="column"></div>
+        </div>
+
+        <div class="footer">SD Anugerah Abadi 1 Bengalon | Halaman 1</div>
+    </div>
+
+    <!-- HALAMAN 2: URAIAN (TANPA KOP & IDENTITAS UNTUK CETAK BOLAK-BALIK) -->
+    <div id="paperArea2" class="page size-f4">
+        <div class="uraian-title">LEMBAR JAWABAN URAIAN :</div>
+        <div id="kotakUraian" class="kotak-uraian"></div>
+
+        <div class="footer">SD Anugerah Abadi 1 Bengalon | Halaman 2</div>
+    </div>
+
+    <script>
+        function updateLogoSource() {
+            const urlInput = document.getElementById('inputDriveUrl').value.trim();
+            const logos = document.querySelectorAll('.logo-preview');
+            
+            if (!urlInput) {
+                logos.forEach(img => img.style.visibility = 'hidden');
+                return;
+            }
+
+            const match = urlInput.match(/\/d\/([a-zA-Z0-9_-]+)/) || urlInput.match(/id=([a-zA-Z0-9_-]+)/);
+            let finalUrl = urlInput;
+
+            if (match && match[1]) {
+                finalUrl = `https://lh3.googleusercontent.com/d/${match[1]}`;
+            }
+
+            logos.forEach(img => {
+                img.src = finalUrl;
+                img.style.visibility = 'visible';
+                img.onerror = function() {
+                    this.style.visibility = 'hidden';
+                };
+            });
+        }
+
+        function updateLogoPosition() {
+            const size = document.getElementById('logoSize').value;
+            const posX = document.getElementById('logoX').value;
+            const posY = document.getElementById('logoY').value;
+
+            document.getElementById('valSize').innerText = size;
+            document.getElementById('valX').innerText = posX;
+            document.getElementById('valY').innerText = posY;
+
+            const logos = document.querySelectorAll('.logo-preview');
+            logos.forEach(img => {
+                img.style.width = size + 'mm';
+                img.style.height = size + 'mm';
+                img.style.left = posX + 'mm';
+                img.style.top = posY + 'mm';
+            });
+        }
+
+        function generateUraianLines(isF4) {
+            const container = document.getElementById('kotakUraian');
+            container.innerHTML = '';
+            // Spasi 6.5mm: 44 baris untuk F4, 38 baris untuk A4
+            const lineCount = isF4 ? 44 : 38;
+            for (let i = 0; i < lineCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'uraian-line';
+                container.appendChild(line);
+            }
+        }
+
+        function update() {
+            const mapels = document.querySelectorAll('.displayMapel');
+            const kelas = document.querySelectorAll('.displayKelas');
+            const tanggals = document.querySelectorAll('.displayTanggal');
+
+            mapels.forEach(el => el.innerText = document.getElementById('inputMapel').value);
+            kelas.forEach(el => el.innerText = document.getElementById('inputKelas').value);
+            
+            const tglValue = document.getElementById('inputTanggal').value;
+            if(tglValue) {
+                const d = new Date(tglValue);
+                const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                tanggals.forEach(el => el.innerText = d.toLocaleDateString('id-ID', options));
+            }
+
+            const p1 = document.getElementById('paperArea1');
+            const p2 = document.getElementById('paperArea2');
+            const size = document.getElementById('selectPaper').value;
+            const styleTag = document.getElementById('page-style');
+
+            if(size === 'size-f4') {
+                p1.className = 'page size-f4';
+                p2.className = 'page size-f4';
+                styleTag.innerHTML = '@page { size: 215mm 330mm; margin: 0; }';
+                generateUraianLines(true);
+            } else {
+                p1.className = 'page size-a4';
+                p2.className = 'page size-a4';
+                styleTag.innerHTML = '@page { size: A4; margin: 0; }';
+                generateUraianLines(false);
+            }
+        }
+
+        function generatePG(start, end, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ""; 
+            for (let i = start; i <= end; i++) {
+                const row = document.createElement('div');
+                row.className = 'question-row';
+                row.innerHTML = `
+                    <div class="q-num">${i}.</div>
+                    <div class="options">
+                        <div class="box">A</div>
+                        <div class="box">B</div>
+                        <div class="box">C</div>
+                        <div class="box">D</div>
+                    </div>
+                `;
+                container.appendChild(row);
+            }
+        }
+
+        function updateLJK() {
+            const inputElement = document.getElementById('inputJumlahPG');
+            let totalSoal = parseInt(inputElement.value);
+            
+            if (totalSoal > 40) {
+                totalSoal = 40;
+                inputElement.value = 40;
+            } else if (totalSoal < 1) {
+                totalSoal = 1;
+                inputElement.value = 1;
+            }
+
+            if (isNaN(totalSoal)) return;
+
+            const half = Math.ceil(totalSoal / 2);
+
+            generatePG(1, half, 'col1');
+            
+            if (totalSoal > 1) {
+                generatePG(half + 1, totalSoal, 'col2');
+            } else {
+                document.getElementById('col2').innerHTML = "";
+            }
+            
+            update();
+        }
+
+        updateLJK();
+    </script>
+</body>
+</html>
