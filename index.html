@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>LJK ASAS Ganjil - SD Anugerah Abadi 1 Bengalon</title>
+    <title>LJK ASAS Ganjil - Matematika - Kelas V (Lima)</title>
     <style id="page-style">
         @page { size: 215mm 330mm; margin: 0; }
     </style>
@@ -98,7 +98,7 @@
         .student-box { 
             border: 1.5px solid black; 
             padding: 10px 12px; 
-            margin-bottom: 24px; /* Jarak diperlebar dari bagian bawah identitas */
+            margin-bottom: 24px;
             font-family: sans-serif;
         }
         .info-table { width: 100%; border-collapse: collapse; }
@@ -235,7 +235,7 @@
                     <option value="size-a4">A4</option>
                 </select>
             </label>
-            <button onclick="window.print()" style="margin-left: auto; padding: 8px 16px; font-weight: bold; cursor: pointer; background: #1a73e8; color: white; border: none; border-radius: 5px;">🖨️ CETAK SEKARANG</button>
+            <button onclick="cetakLJK()" style="margin-left: auto; padding: 8px 16px; font-weight: bold; cursor: pointer; background: #1a73e8; color: white; border: none; border-radius: 5px;">🖨️ CETAK / SIMPAN PDF</button>
         </div>
     </div>
 
@@ -356,13 +356,25 @@
             }
         }
 
+        function updateDocumentTitle(mapelVal, kelasVal) {
+            const cleanMapel = (mapelVal || 'Mapel').replace(/[\\/:*?"<>|]/g, '-').trim();
+            const cleanKelas = (kelasVal || 'Kelas').replace(/[\\/:*?"<>|]/g, '-').trim();
+            document.title = `LJK ASAS Ganjil - ${cleanMapel} - Kelas ${cleanKelas}`;
+        }
+
         function update() {
+            const mapelVal = document.getElementById('inputMapel').value;
+            const kelasVal = document.getElementById('inputKelas').value;
+
             const mapels = document.querySelectorAll('.displayMapel');
             const kelas = document.querySelectorAll('.displayKelas');
             const tanggals = document.querySelectorAll('.displayTanggal');
 
-            mapels.forEach(el => el.innerText = document.getElementById('inputMapel').value);
-            kelas.forEach(el => el.innerText = document.getElementById('inputKelas').value);
+            mapels.forEach(el => el.innerText = mapelVal);
+            kelas.forEach(el => el.innerText = kelasVal);
+
+            // Perbarui nama file default saat Save as PDF
+            updateDocumentTitle(mapelVal, kelasVal);
             
             const tglValue = document.getElementById('inputTanggal').value;
             if(tglValue) {
@@ -387,6 +399,11 @@
                 styleTag.innerHTML = '@page { size: A4; margin: 0; }';
                 generateUraianLines(false);
             }
+        }
+
+        function cetakLJK() {
+            update();
+            window.print();
         }
 
         function generatePG(start, end, containerId) {
@@ -423,8 +440,6 @@
 
             if (isNaN(totalSoal)) return;
 
-            // Jika soal <= 30 (misal 25 soal): per kolom maksimal 10 soal (jadi 10 - 10 - 5)
-            // Jika soal > 30 (misal 35 soal): per kolom maksimal 15 soal (jadi 15 - 15 - 5)
             const perCol = totalSoal <= 30 ? 10 : 15;
 
             const col1End = Math.min(totalSoal, perCol);
