@@ -3,25 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <title>LJK ASESMEN SUMATIF SD ANUGERAH ABADI 1 BENGALON</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style id="page-style">
         @page { size: 215mm 330mm; margin: 0; }
     </style>
     <style>
         @media screen {
-            body { background-color: #f0f0f0; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: sans-serif; }
-            .control-panel { background: white; padding: 20px; border-radius: 8px; width: 215mm; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); box-sizing: border-box; }
-            .page { box-shadow: 0 0 20px rgba(0,0,0,0.2); margin-bottom: 20px; }
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                background-color: #0b1120;
+                background-image: 
+                    radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.45) 0px, transparent 50%),
+                    radial-gradient(at 100% 0%, rgba(15, 118, 110, 0.25) 0px, transparent 50%),
+                    radial-gradient(at 50% 100%, rgba(30, 41, 59, 0.8) 0px, transparent 60%);
+                font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+                color: #f8fafc;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 32px 20px 96px 20px;
+            }
+
+            /* TOMBOL MELAYANG (FLOATING ACTION DOCK) */
+            .floating-dock {
+                position: fixed;
+                bottom: 24px;
+                right: 28px;
+                z-index: 900;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: rgba(15, 23, 42, 0.78);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                padding: 8px;
+                border-radius: 999px;
+                box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            }
+
+            .fab-btn {
+                border: none;
+                border-radius: 999px;
+                padding: 11px 18px;
+                font-family: inherit;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.2s ease;
+            }
+
+            .fab-settings {
+                background: rgba(30, 41, 59, 0.9);
+                color: #f8fafc;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+            }
+
+            .fab-settings:hover {
+                background: rgba(51, 65, 85, 0.95);
+                transform: translateY(-1px);
+            }
+
+            .fab-print {
+                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+                color: #ffffff;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: 0 6px 18px -4px rgba(37, 99, 235, 0.6);
+            }
+
+            .fab-print:hover {
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 10px 22px -4px rgba(37, 99, 235, 0.75);
+            }
+
+            /* OVERLAY & POP-UP MODAL PENGATURAN */
+            .modal-backdrop {
+                position: fixed;
+                inset: 0;
+                z-index: 1000;
+                background: rgba(2, 6, 23, 0.68);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.25s ease, visibility 0.25s ease;
+            }
+
+            .modal-backdrop.open {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .control-panel {
+                width: 100%;
+                max-width: 620px;
+                max-height: calc(100vh - 48px);
+                overflow-y: auto;
+                background: rgba(15, 23, 42, 0.88);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                border-radius: 22px;
+                padding: 24px;
+                box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+                transform: translateY(14px) scale(0.97);
+                transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+                scrollbar-width: thin;
+                scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+            }
+
+            .modal-backdrop.open .control-panel {
+                transform: translateY(0) scale(1);
+            }
+
+            .control-panel::-webkit-scrollbar {
+                width: 5px;
+            }
+            .control-panel::-webkit-scrollbar-thumb {
+                background: rgba(148, 163, 184, 0.3);
+                border-radius: 10px;
+            }
+
+            .panel-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+                padding-bottom: 16px;
+                margin-bottom: 18px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .panel-title-wrap {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+
+            .panel-icon {
+                width: 42px;
+                height: 42px;
+                flex-shrink: 0;
+                background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #ffffff;
+                box-shadow: 0 8px 20px -4px rgba(59, 130, 246, 0.5);
+            }
+
+            .panel-header h3 {
+                margin: 0;
+                font-size: 16px;
+                font-weight: 700;
+                color: #ffffff;
+                letter-spacing: -0.02em;
+            }
+
+            .panel-subtitle {
+                margin: 2px 0 0 0;
+                font-size: 12px;
+                color: #94a3b8;
+                font-weight: 500;
+            }
+
+            .btn-close-modal {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background: rgba(30, 41, 59, 0.8);
+                color: #cbd5e1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .btn-close-modal:hover {
+                background: rgba(239, 68, 68, 0.2);
+                border-color: rgba(239, 68, 68, 0.4);
+                color: #fca5a5;
+            }
+
+            .panel-card {
+                background: rgba(30, 41, 59, 0.55);
+                border: 1px solid rgba(255, 255, 255, 0.07);
+                border-radius: 14px;
+                padding: 15px;
+                margin-bottom: 14px;
+            }
+
+            .card-label {
+                font-size: 10.5px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #60a5fa;
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .field-group {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                margin-bottom: 11px;
+            }
+
+            .field-group:last-child {
+                margin-bottom: 0;
+            }
+
+            .field-row-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-bottom: 11px;
+            }
+
+            .field-row-2:last-child {
+                margin-bottom: 0;
+            }
+
+            .field-group label {
+                font-size: 12px;
+                font-weight: 500;
+                color: #cbd5e1;
+            }
+
+            .control-panel input[type="text"],
+            .control-panel input[type="date"],
+            .control-panel input[type="number"] {
+                width: 100%;
+                padding: 9px 12px;
+                font-size: 13px;
+                color: #f8fafc;
+                background: rgba(15, 23, 42, 0.8);
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                border-radius: 10px;
+                font-family: inherit;
+                transition: all 0.2s ease;
+            }
+
+            .control-panel input[type="date"]::-webkit-calendar-picker-indicator {
+                filter: invert(1);
+                opacity: 0.7;
+                cursor: pointer;
+            }
+
+            .control-panel input:focus {
+                outline: none;
+                border-color: #3b82f6;
+                background: rgba(15, 23, 42, 0.98);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            }
+
+            /* SLIDER STYLING */
+            .slider-grid-3 {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .slider-box {
+                background: rgba(15, 23, 42, 0.6);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 9px 11px;
+                border-radius: 10px;
+            }
+
+            .slider-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 11px;
+                font-weight: 500;
+                color: #cbd5e1;
+                margin-bottom: 6px;
+            }
+
+            .slider-val {
+                color: #93c5fd;
+                background: rgba(59, 130, 246, 0.18);
+                border: 1px solid rgba(59, 130, 246, 0.3);
+                padding: 1px 6px;
+                border-radius: 6px;
+                font-size: 10.5px;
+                font-weight: 600;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .control-panel input[type="range"] {
+                width: 100%;
+                height: 5px;
+                -webkit-appearance: none;
+                background: rgba(148, 163, 184, 0.25);
+                border-radius: 999px;
+                outline: none;
+                cursor: pointer;
+                margin: 4px 0 2px 0;
+            }
+
+            .control-panel input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: #3b82f6;
+                border: 2px solid #ffffff;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+                cursor: pointer;
+                transition: transform 0.15s ease;
+            }
+
+            .control-panel input[type="range"]::-webkit-slider-thumb:hover {
+                transform: scale(1.15);
+            }
+
+            .btn-reset {
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                color: #cbd5e1;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 3px 9px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-family: inherit;
+                transition: all 0.15s ease;
+            }
+
+            .btn-reset:hover {
+                background: rgba(255, 255, 255, 0.14);
+                color: #ffffff;
+            }
+
+            /* SEGMENTED PILL BUTTONS */
+            .segmented-group {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                background: rgba(15, 23, 42, 0.85);
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                border-radius: 10px;
+                padding: 3px;
+                gap: 4px;
+            }
+
+            .seg-btn {
+                background: transparent;
+                border: none;
+                color: #94a3b8;
+                font-family: inherit;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 7px 8px;
+                border-radius: 7px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .seg-btn:hover {
+                color: #e2e8f0;
+            }
+
+            .seg-btn.active {
+                background: linear-gradient(135deg, #2563eb, #1d4ed8);
+                color: #ffffff;
+                box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+            }
+
+            /* MODAL FOOTER ACTIONS */
+            .modal-actions {
+                display: grid;
+                grid-template-columns: 1fr 1.4fr;
+                gap: 12px;
+                margin-top: 6px;
+            }
+
+            .btn-done {
+                padding: 12px 16px;
+                font-family: inherit;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                background: rgba(30, 41, 59, 0.9);
+                color: #e2e8f0;
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                border-radius: 12px;
+                transition: all 0.2s ease;
+            }
+
+            .btn-done:hover {
+                background: rgba(51, 65, 85, 0.95);
+                color: #ffffff;
+            }
+
+            .btn-print {
+                padding: 12px 20px;
+                font-family: inherit;
+                font-size: 13.5px;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+                cursor: pointer;
+                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+                color: #ffffff;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 12px;
+                box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 9px;
+            }
+
+            .btn-print:hover {
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 14px 28px -5px rgba(37, 99, 235, 0.65);
+            }
+
+            /* AREA PRATINJAU KERTAS (TENGAH) */
+            .preview-workspace {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 28px;
+            }
+
+            .page {
+                box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.1);
+                margin: 0;
+            }
+
+            @media (max-width: 640px) {
+                .field-row-2,
+                .slider-grid-3,
+                .modal-actions {
+                    grid-template-columns: 1fr;
+                }
+                .floating-dock {
+                    right: 16px;
+                    bottom: 16px;
+                }
+            }
         }
 
         @media print {
-            html, body { background: white; margin: 0; padding: 0; }
-            .control-panel { display: none; }
+            html, body { background: white; margin: 0; padding: 0; display: block; }
+            .floating-dock, .modal-backdrop { display: none !important; }
+            .preview-workspace { display: block; }
             .page { border: none; box-shadow: none; margin: 0; page-break-after: always; }
             .page:last-child { page-break-after: auto; }
         }
 
         .page {
             background: white;
+            color: black;
             padding: 10mm 15mm; 
             position: relative;
             box-sizing: border-box;
@@ -196,139 +655,268 @@
             padding-top: 4px; 
             font-family: sans-serif;
         }
-
-        .panel-section {
-            border-top: 1px solid #ddd;
-            padding-top: 12px;
-            margin-top: 12px;
-        }
     </style>
 </head>
 <body>
 
-    <div class="control-panel">
-        <h3 style="margin-top:0; margin-bottom: 12px;">⚙️ Pengaturan LJK SD Anugerah Abadi 1</h3>
-        
-        <!-- Baris 1: Nama Asesmen & Tahun Pelajaran (Editable) -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 12px;">
-            <label>Nama Asesmen:<br>
-                <input type="text" id="inputNamaAsesmen" value="ASESMEN SUMATIF AKHIR SEMESTER GANJIL" style="width:100%" oninput="update()">
-            </label>
-            <label>Tahun Pelajaran:<br>
-                <input type="text" id="inputTahunPelajaran" value="TAHUN PELAJARAN 2026/2027" style="width:100%" oninput="update()">
-            </label>
-        </div>
-
-        <!-- Baris 2: Mapel, Kelas, Tanggal, Jumlah PG -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px;">
-            <label>Mapel:<br><input type="text" id="inputMapel" value="Matematika" style="width:100%" oninput="update()"></label>
-            <label>Kelas:<br><input type="text" id="inputKelas" value="V (Lima)" style="width:100%" oninput="update()"></label>
-            <label>Tanggal:<br><input type="date" id="inputTanggal" style="width:100%" oninput="update()"></label>
-            <label>Jumlah PG (Max 45):<br><input type="number" id="inputJumlahPG" value="35" min="1" max="45" style="width:100%" oninput="updateLJK()"></label>
-        </div>
-
-        <!-- Baris 3: Logo -->
-        <div class="panel-section">
-            <div style="margin-bottom: 10px;">
-                <label><b>Link Google Drive Logo:</b> 
-                    <input type="text" id="inputDriveUrl" value="https://drive.google.com/file/d/18Xq09U_GaVqDgBxsLIpcDNVU45dItE1l/view?usp=sharing" style="width: 68%;" oninput="updateLogoSource()">
-                </label>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; font-size: 13px;">
-                <label>Ukuran Logo: <b><span id="valSize">30</span> mm</b><br>
-                    <input type="range" id="logoSize" min="10" max="40" step="0.5" value="30" style="width:100%" oninput="updateLogoPosition()">
-                </label>
-                <label>Geser Kiri/Kanan (X): <b><span id="valX">0</span> mm</b><br>
-                    <input type="range" id="logoX" min="-10" max="30" step="0.5" value="0" style="width:100%" oninput="updateLogoPosition()">
-                </label>
-                <label>Geser Atas/Bawah (Y): <b><span id="valY">0</span> mm</b><br>
-                    <input type="range" id="logoY" min="-10" max="20" step="0.5" value="0" style="width:100%" oninput="updateLogoPosition()">
-                </label>
-            </div>
-        </div>
-
-        <!-- Baris 4: Kertas, Opsi, Tombol Cetak -->
-        <div class="panel-section" style="display: flex; gap: 20px; align-items: center;">
-            <label><b>Ukuran Kertas:</b> 
-                <select id="selectPaper" onchange="update()">
-                    <option value="size-f4" selected>F4 / Folio</option>
-                    <option value="size-a4">A4</option>
-                </select>
-            </label>
-            <label><b>Opsi Jawaban:</b> 
-                <select id="selectOpsi" onchange="updateLJK()">
-                    <option value="4" selected>A - D (Kelas Tinggi)</option>
-                    <option value="3">A - C (Kelas Rendah)</option>
-                </select>
-            </label>
-            <button onclick="cetakLJK()" style="margin-left: auto; padding: 8px 16px; font-weight: bold; cursor: pointer; background: #1a73e8; color: white; border: none; border-radius: 5px;">🖨️ CETAK / SIMPAN PDF</button>
-        </div>
+    <!-- TOMBOL MELAYANG (FLOATING DOCK POJOK KANAN BAWAH) -->
+    <div class="floating-dock">
+        <button type="button" class="fab-btn fab-settings" onclick="openSettingsModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Pengaturan LJK</span>
+        </button>
+        <button type="button" class="fab-btn fab-print" onclick="cetakLJK()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <span>Cetak / PDF</span>
+        </button>
     </div>
 
-    <!-- HALAMAN 1: PILIHAN GANDA -->
-    <div id="paperArea1" class="page size-f4">
-        <div class="kop-container">
-            <img src="https://lh3.googleusercontent.com/d/18Xq09U_GaVqDgBxsLIpcDNVU45dItE1l" alt="Logo" class="kop-logo logo-preview">
-            <div class="kop-text">
-                <p class="kop-yayasan">YAYASAN ANUGERAH ABADI</p>
-                <p class="kop-sekolah">SD ANUGERAH ABADI 1 BENGALON</p>
-                <table class="kop-detail-table">
+    <!-- POP-UP MODAL PENGATURAN -->
+    <div id="settingsModal" class="modal-backdrop" onclick="handleBackdropClick(event)">
+        <aside class="control-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="panel-header">
+                <div class="panel-title-wrap">
+                    <div class="panel-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 id="modalTitle">Pengaturan Lembar Jawaban</h3>
+                        <p class="panel-subtitle">SD Anugerah Abadi 1 Bengalon</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="closeSettingsModal()" title="Tutup (Esc)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Bagian 1: Identitas Asesmen -->
+            <div class="panel-card">
+                <div class="card-label"><span>01 · Identitas Asesmen</span></div>
+                <div class="field-row-2">
+                    <div class="field-group">
+                        <label for="inputNamaAsesmen">Judul Asesmen</label>
+                        <input type="text" id="inputNamaAsesmen" value="ASESMEN SUMATIF AKHIR SEMESTER GANJIL" oninput="update()">
+                    </div>
+                    <div class="field-group">
+                        <label for="inputTahunPelajaran">Tahun Pelajaran</label>
+                        <input type="text" id="inputTahunPelajaran" value="TAHUN PELAJARAN 2026/2027" oninput="update()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bagian 2: Detail Mapel & Soal -->
+            <div class="panel-card">
+                <div class="card-label"><span>02 · Mata Pelajaran & Soal</span></div>
+                <div class="field-row-2">
+                    <div class="field-group">
+                        <label for="inputMapel">Mata Pelajaran</label>
+                        <input type="text" id="inputMapel" value="Matematika" oninput="update()">
+                    </div>
+                    <div class="field-group">
+                        <label for="inputKelas">Kelas</label>
+                        <input type="text" id="inputKelas" value="V (Lima)" oninput="update()">
+                    </div>
+                </div>
+                <div class="field-row-2">
+                    <div class="field-group">
+                        <label for="inputTanggal">Tanggal Ujian</label>
+                        <input type="date" id="inputTanggal" oninput="update()">
+                    </div>
+                    <div class="field-group">
+                        <label for="inputJumlahPG">Jumlah PG (Max 45)</label>
+                        <input type="number" id="inputJumlahPG" value="35" min="1" max="45" oninput="updateLJK()">
+                    </div>
+                </div>
+                <div class="field-row-2" style="margin-top: 4px;">
+                    <div class="field-group">
+                        <label>Opsi Pilihan Ganda</label>
+                        <input type="hidden" id="selectOpsi" value="4">
+                        <div class="segmented-group">
+                            <button type="button" class="seg-btn active" id="btnOpsi4" onclick="setOpsi(4)">A – D</button>
+                            <button type="button" class="seg-btn" id="btnOpsi3" onclick="setOpsi(3)">A – C</button>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label>Ukuran Kertas</label>
+                        <input type="hidden" id="selectPaper" value="size-f4">
+                        <div class="segmented-group">
+                            <button type="button" class="seg-btn active" id="btnPaperF4" onclick="setPaper('size-f4')">F4 / Folio</button>
+                            <button type="button" class="seg-btn" id="btnPaperA4" onclick="setPaper('size-a4')">A4</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bagian 3: Pengaturan Logo -->
+            <div class="panel-card">
+                <div class="card-label">
+                    <span>03 · Logo Kop Surat</span>
+                    <button type="button" class="btn-reset" onclick="resetLogoPosition()">↺ Reset Posisi</button>
+                </div>
+                <div class="field-group">
+                    <label for="inputDriveUrl">Link Google Drive Logo</label>
+                    <input type="text" id="inputDriveUrl" value="https://drive.google.com/file/d/18Xq09U_GaVqDgBxsLIpcDNVU45dItE1l/view?usp=sharing" oninput="updateLogoSource()">
+                </div>
+                <div class="slider-grid-3">
+                    <div class="slider-box">
+                        <div class="slider-header">
+                            <span>Ukuran</span>
+                            <span class="slider-val"><span id="valSize">30</span> mm</span>
+                        </div>
+                        <input type="range" id="logoSize" min="10" max="40" step="0.5" value="30" oninput="updateLogoPosition()">
+                    </div>
+                    <div class="slider-box">
+                        <div class="slider-header">
+                            <span>Geser X</span>
+                            <span class="slider-val"><span id="valX">0</span> mm</span>
+                        </div>
+                        <input type="range" id="logoX" min="-10" max="30" step="0.5" value="0" oninput="updateLogoPosition()">
+                    </div>
+                    <div class="slider-box">
+                        <div class="slider-header">
+                            <span>Geser Y</span>
+                            <span class="slider-val"><span id="valY">0</span> mm</span>
+                        </div>
+                        <input type="range" id="logoY" min="-10" max="20" step="0.5" value="0" oninput="updateLogoPosition()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-done" onclick="closeSettingsModal()">Selesai & Lihat LJK</button>
+                <button type="button" class="btn-print" onclick="cetakDariModal()">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>CETAK / SIMPAN PDF</span>
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- AREA PRATINJAU KERTAS LJK (TENGAH) -->
+    <main class="preview-workspace">
+        <!-- HALAMAN 1: PILIHAN GANDA -->
+        <div id="paperArea1" class="page size-f4">
+            <div class="kop-container">
+                <img src="https://lh3.googleusercontent.com/d/18Xq09U_GaVqDgBxsLIpcDNVU45dItE1l" alt="Logo" class="kop-logo logo-preview">
+                <div class="kop-text">
+                    <p class="kop-yayasan">YAYASAN ANUGERAH ABADI</p>
+                    <p class="kop-sekolah">SD ANUGERAH ABADI 1 BENGALON</p>
+                    <table class="kop-detail-table">
+                        <tr>
+                            <td style="width: 58px;">Sekretariat</td>
+                            <td>: Jl.Poros Muara Wahau Km 145, Desa Tepian Langsat Kecamatan.Bengalon,<br>
+                            &nbsp;&nbsp;Kabupaten. Kutai Timur, Provinsi .KalimantanTimur, Kode Pos : 75618</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>: <span class="kop-email">sds.anugerahabadi14@gmail.com</span> NSS: 10.2.16.10.09.023 NPSN : 69907270</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="exam-title" contenteditable="true" oninput="syncTitleFromDirectEdit()">
+                <span id="displayNamaAsesmen">ASESMEN SUMATIF AKHIR SEMESTER GANJIL</span><br>
+                <span id="displayTahunPelajaran">TAHUN PELAJARAN 2026/2027</span>
+            </div>
+
+            <div class="student-box">
+                <table class="info-table">
                     <tr>
-                        <td style="width: 58px;">Sekretariat</td>
-                        <td>: Jl.Poros Muara Wahau Km 145, Desa Tepian Langsat Kecamatan.Bengalon,<br>
-                        &nbsp;&nbsp;Kabupaten. Kutai Timur, Provinsi .KalimantanTimur, Kode Pos : 75618</td>
+                        <td style="width: 80px; font-weight: bold;">Nama</td>
+                        <td>: ...........................................................</td>
+                        <td class="label-short">Kelas</td>
+                        <td>: <span class="displayKelas" style="font-weight:bold">V (Lima)</span></td>
                     </tr>
                     <tr>
-                        <td>Email</td>
-                        <td>: <span class="kop-email">sds.anugerahabadi14@gmail.com</span> NSS: 10.2.16.10.09.023 NPSN : 69907270</td>
+                        <td class="label-wide">Mata Pelajaran</td>
+                        <td>: <span class="displayMapel" style="font-weight:bold">Matematika</span></td>
+                        <td class="label-short">Tanggal</td>
+                        <td>: <span class="displayTanggal">................................</span></td>
                     </tr>
                 </table>
             </div>
+
+            <div class="sheet-subtitle">LEMBAR JAWABAN (PILIHAN GANDA)</div>
+
+            <div class="answer-wrapper">
+                <div id="col1" class="column"></div>
+                <div id="col2" class="column"></div>
+                <div id="col3" class="column"></div>
+            </div>
+
+            <div class="footer">SD Anugerah Abadi 1 Bengalon | Halaman 1</div>
         </div>
 
-        <div class="exam-title" contenteditable="true" oninput="syncTitleFromDirectEdit()">
-            <span id="displayNamaAsesmen">ASESMEN SUMATIF AKHIR SEMESTER GANJIL</span><br>
-            <span id="displayTahunPelajaran">TAHUN PELAJARAN 2026/2027</span>
+        <!-- HALAMAN 2: URAIAN (TANPA KOP & IDENTITAS UNTUK CETAK BOLAK-BALIK) -->
+        <div id="paperArea2" class="page size-f4">
+            <div class="uraian-title">LEMBAR JAWABAN URAIAN :</div>
+            <div id="kotakUraian" class="kotak-uraian"></div>
+
+            <div class="footer">SD Anugerah Abadi 1 Bengalon | Halaman 2</div>
         </div>
-
-        <div class="student-box">
-            <table class="info-table">
-                <tr>
-                    <td style="width: 80px; font-weight: bold;">Nama</td>
-                    <td>: ...........................................................</td>
-                    <td class="label-short">Kelas</td>
-                    <td>: <span class="displayKelas" style="font-weight:bold">V (Lima)</span></td>
-                </tr>
-                <tr>
-                    <td class="label-wide">Mata Pelajaran</td>
-                    <td>: <span class="displayMapel" style="font-weight:bold">Matematika</span></td>
-                    <td class="label-short">Tanggal</td>
-                    <td>: <span class="displayTanggal">................................</span></td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="sheet-subtitle">LEMBAR JAWABAN (PILIHAN GANDA)</div>
-
-        <div class="answer-wrapper">
-            <div id="col1" class="column"></div>
-            <div id="col2" class="column"></div>
-            <div id="col3" class="column"></div>
-        </div>
-
-        <div class="footer">SD Anugerah Abadi 1 Bengalon | Halaman 1</div>
-    </div>
-
-    <!-- HALAMAN 2: URAIAN (TANPA KOP & IDENTITAS UNTUK CETAK BOLAK-BALIK) -->
-    <div id="paperArea2" class="page size-f4">
-        <div class="uraian-title">LEMBAR JAWABAN URAIAN :</div>
-        <div id="kotakUraian" class="kotak-uraian"></div>
-
-        <div class="footer">SD Anugerah Abadi 1 Bengalon | Halaman 2</div>
-    </div>
+    </main>
 
     <script>
         const DEFAULT_DOC_TITLE = 'LJK Asesmen Sumatif SDAA1';
+
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.add('open');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('open');
+        }
+
+        function handleBackdropClick(e) {
+            if (e.target.id === 'settingsModal') {
+                closeSettingsModal();
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSettingsModal();
+            }
+        });
+
+        function cetakDariModal() {
+            closeSettingsModal();
+            setTimeout(cetakLJK, 150);
+        }
+
+        function setOpsi(val) {
+            document.getElementById('selectOpsi').value = val;
+            document.getElementById('btnOpsi4').classList.toggle('active', val === 4);
+            document.getElementById('btnOpsi3').classList.toggle('active', val === 3);
+            updateLJK();
+        }
+
+        function setPaper(val) {
+            document.getElementById('selectPaper').value = val;
+            document.getElementById('btnPaperF4').classList.toggle('active', val === 'size-f4');
+            document.getElementById('btnPaperA4').classList.toggle('active', val === 'size-a4');
+            update();
+        }
 
         function updateLogoSource() {
             const urlInput = document.getElementById('inputDriveUrl').value.trim();
@@ -373,6 +961,13 @@
             });
         }
 
+        function resetLogoPosition() {
+            document.getElementById('logoSize').value = 30;
+            document.getElementById('logoX').value = 0;
+            document.getElementById('logoY').value = 0;
+            updateLogoPosition();
+        }
+
         function generateUraianLines(isF4) {
             const container = document.getElementById('kotakUraian');
             container.innerHTML = '';
@@ -396,7 +991,6 @@
             document.title = DEFAULT_DOC_TITLE;
         }
 
-        // Otomatis menyesuaikan nama file saat Ctrl+P maupun klik tombol cetak
         window.addEventListener('beforeprint', applyPrintFileName);
         window.addEventListener('afterprint', restoreDefaultTitle);
 
@@ -425,14 +1019,21 @@
             mapels.forEach(el => el.innerText = mapelVal);
             kelas.forEach(el => el.innerText = kelasVal);
 
-            // Jaga judul tab tetap default saat mode edit di layar
             restoreDefaultTitle();
             
             const tglValue = document.getElementById('inputTanggal').value;
-            if(tglValue) {
+            if (tglValue) {
                 const d = new Date(tglValue);
                 const options = { day: 'numeric', month: 'long', year: 'numeric' };
-                tanggals.forEach(el => el.innerText = d.toLocaleDateString('id-ID', options));
+                tanggals.forEach(el => {
+                    el.innerText = d.toLocaleDateString('id-ID', options);
+                    el.style.fontWeight = 'bold';
+                });
+            } else {
+                tanggals.forEach(el => {
+                    el.innerText = '................................';
+                    el.style.fontWeight = 'normal';
+                });
             }
 
             const p1 = document.getElementById('paperArea1');
