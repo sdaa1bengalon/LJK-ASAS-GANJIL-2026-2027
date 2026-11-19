@@ -235,6 +235,12 @@
                     <option value="size-a4">A4</option>
                 </select>
             </label>
+            <label><b>Opsi Jawaban:</b> 
+                <select id="selectOpsi" onchange="updateLJK()">
+                    <option value="4" selected>A - D (Kelas Tinggi)</option>
+                    <option value="3">A - C (Kelas Rendah)</option>
+                </select>
+            </label>
             <button onclick="cetakLJK()" style="margin-left: auto; padding: 8px 16px; font-weight: bold; cursor: pointer; background: #1a73e8; color: white; border: none; border-radius: 5px;">🖨️ CETAK / SIMPAN PDF</button>
         </div>
     </div>
@@ -373,7 +379,6 @@
             mapels.forEach(el => el.innerText = mapelVal);
             kelas.forEach(el => el.innerText = kelasVal);
 
-            // Perbarui nama file default saat Save as PDF
             updateDocumentTitle(mapelVal, kelasVal);
             
             const tglValue = document.getElementById('inputTanggal').value;
@@ -406,20 +411,21 @@
             window.print();
         }
 
-        function generatePG(start, end, containerId) {
+        function generatePG(start, end, containerId, jumlahOpsi) {
             const container = document.getElementById(containerId);
             container.innerHTML = ""; 
             if (start > end) return;
+
+            const opsiList = jumlahOpsi === 3 ? ['A', 'B', 'C'] : ['A', 'B', 'C', 'D'];
+            const opsiHTML = opsiList.map(huruf => `<div class="box">${huruf}</div>`).join('');
+
             for (let i = start; i <= end; i++) {
                 const row = document.createElement('div');
                 row.className = 'question-row';
                 row.innerHTML = `
                     <div class="q-num">${i}.</div>
                     <div class="options">
-                        <div class="box">A</div>
-                        <div class="box">B</div>
-                        <div class="box">C</div>
-                        <div class="box">D</div>
+                        ${opsiHTML}
                     </div>
                 `;
                 container.appendChild(row);
@@ -428,6 +434,7 @@
 
         function updateLJK() {
             const inputElement = document.getElementById('inputJumlahPG');
+            const jumlahOpsi = parseInt(document.getElementById('selectOpsi').value);
             let totalSoal = parseInt(inputElement.value);
             
             if (totalSoal > 45) {
@@ -445,9 +452,9 @@
             const col1End = Math.min(totalSoal, perCol);
             const col2End = Math.min(totalSoal, perCol * 2);
 
-            generatePG(1, col1End, 'col1');
-            generatePG(col1End + 1, col2End, 'col2');
-            generatePG(col2End + 1, totalSoal, 'col3');
+            generatePG(1, col1End, 'col1', jumlahOpsi);
+            generatePG(col1End + 1, col2End, 'col2', jumlahOpsi);
+            generatePG(col2End + 1, totalSoal, 'col3', jumlahOpsi);
             
             update();
         }
