@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>LJK ASAS Ganjil - Matematika - Kelas V (Lima)</title>
+    <title>LJK ASESMEN SUMATIF SD ANUGERAH ABADI 1 BENGALON</title>
     <style id="page-style">
         @page { size: 215mm 330mm; margin: 0; }
     </style>
@@ -92,6 +92,13 @@
             font-size: 12pt;
             line-height: 1.3;
             margin-bottom: 12px;
+            outline: none;
+        }
+        @media screen {
+            .exam-title:hover {
+                background-color: #f8faff;
+                border-radius: 4px;
+            }
         }
         
         /* IDENTITAS SISWA */
@@ -202,6 +209,17 @@
     <div class="control-panel">
         <h3 style="margin-top:0; margin-bottom: 12px;">⚙️ Pengaturan LJK SD Anugerah Abadi 1</h3>
         
+        <!-- Baris 1: Nama Asesmen & Tahun Pelajaran (Editable) -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 12px;">
+            <label>Nama Asesmen:<br>
+                <input type="text" id="inputNamaAsesmen" value="ASESMEN SUMATIF AKHIR SEMESTER GANJIL" style="width:100%" oninput="update()">
+            </label>
+            <label>Tahun Pelajaran:<br>
+                <input type="text" id="inputTahunPelajaran" value="TAHUN PELAJARAN 2026/2027" style="width:100%" oninput="update()">
+            </label>
+        </div>
+
+        <!-- Baris 2: Mapel, Kelas, Tanggal, Jumlah PG -->
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px;">
             <label>Mapel:<br><input type="text" id="inputMapel" value="Matematika" style="width:100%" oninput="update()"></label>
             <label>Kelas:<br><input type="text" id="inputKelas" value="V (Lima)" style="width:100%" oninput="update()"></label>
@@ -209,6 +227,7 @@
             <label>Jumlah PG (Max 45):<br><input type="number" id="inputJumlahPG" value="35" min="1" max="45" style="width:100%" oninput="updateLJK()"></label>
         </div>
 
+        <!-- Baris 3: Logo -->
         <div class="panel-section">
             <div style="margin-bottom: 10px;">
                 <label><b>Link Google Drive Logo:</b> 
@@ -228,6 +247,7 @@
             </div>
         </div>
 
+        <!-- Baris 4: Kertas, Opsi, Tombol Cetak -->
         <div class="panel-section" style="display: flex; gap: 20px; align-items: center;">
             <label><b>Ukuran Kertas:</b> 
                 <select id="selectPaper" onchange="update()">
@@ -266,9 +286,9 @@
             </div>
         </div>
 
-        <div class="exam-title">
-            ASESMEN SUMATIF AKHIR SEMESTER GANJIL<br>
-            TAHUN PELAJARAN 2026/2027
+        <div class="exam-title" contenteditable="true" oninput="syncTitleFromDirectEdit()">
+            <span id="displayNamaAsesmen">ASESMEN SUMATIF AKHIR SEMESTER GANJIL</span><br>
+            <span id="displayTahunPelajaran">TAHUN PELAJARAN 2026/2027</span>
         </div>
 
         <div class="student-box">
@@ -308,6 +328,8 @@
     </div>
 
     <script>
+        const DEFAULT_DOC_TITLE = 'LJK Asesmen Sumatif SDAA1';
+
         function updateLogoSource() {
             const urlInput = document.getElementById('inputDriveUrl').value.trim();
             const logos = document.querySelectorAll('.logo-preview');
@@ -362,15 +384,39 @@
             }
         }
 
-        function updateDocumentTitle(mapelVal, kelasVal) {
+        function applyPrintFileName() {
+            const mapelVal = document.getElementById('inputMapel').value;
+            const kelasVal = document.getElementById('inputKelas').value;
             const cleanMapel = (mapelVal || 'Mapel').replace(/[\\/:*?"<>|]/g, '-').trim();
             const cleanKelas = (kelasVal || 'Kelas').replace(/[\\/:*?"<>|]/g, '-').trim();
-            document.title = `LJK ASAS Ganjil - ${cleanMapel} - Kelas ${cleanKelas}`;
+            document.title = `${DEFAULT_DOC_TITLE} - ${cleanMapel} - Kelas ${cleanKelas}`;
+        }
+
+        function restoreDefaultTitle() {
+            document.title = DEFAULT_DOC_TITLE;
+        }
+
+        // Otomatis menyesuaikan nama file saat Ctrl+P maupun klik tombol cetak
+        window.addEventListener('beforeprint', applyPrintFileName);
+        window.addEventListener('afterprint', restoreDefaultTitle);
+
+        function syncTitleFromDirectEdit() {
+            const dispAsesmen = document.getElementById('displayNamaAsesmen');
+            const dispTahun = document.getElementById('displayTahunPelajaran');
+            if (dispAsesmen) document.getElementById('inputNamaAsesmen').value = dispAsesmen.innerText;
+            if (dispTahun) document.getElementById('inputTahunPelajaran').value = dispTahun.innerText;
         }
 
         function update() {
+            const asesmenVal = document.getElementById('inputNamaAsesmen').value;
+            const tahunVal = document.getElementById('inputTahunPelajaran').value;
             const mapelVal = document.getElementById('inputMapel').value;
             const kelasVal = document.getElementById('inputKelas').value;
+
+            const dispAsesmen = document.getElementById('displayNamaAsesmen');
+            const dispTahun = document.getElementById('displayTahunPelajaran');
+            if (dispAsesmen) dispAsesmen.innerText = asesmenVal;
+            if (dispTahun) dispTahun.innerText = tahunVal;
 
             const mapels = document.querySelectorAll('.displayMapel');
             const kelas = document.querySelectorAll('.displayKelas');
@@ -379,7 +425,8 @@
             mapels.forEach(el => el.innerText = mapelVal);
             kelas.forEach(el => el.innerText = kelasVal);
 
-            updateDocumentTitle(mapelVal, kelasVal);
+            // Jaga judul tab tetap default saat mode edit di layar
+            restoreDefaultTitle();
             
             const tglValue = document.getElementById('inputTanggal').value;
             if(tglValue) {
@@ -408,7 +455,9 @@
 
         function cetakLJK() {
             update();
+            applyPrintFileName();
             window.print();
+            setTimeout(restoreDefaultTitle, 500);
         }
 
         function generatePG(start, end, containerId, jumlahOpsi) {
